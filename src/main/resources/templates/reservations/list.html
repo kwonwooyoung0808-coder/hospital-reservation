@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>예약 관리</title>
+</head>
+
+<body>
+
+<h1>예약 관리</h1>
+
+<a th:href="@{/reservations/new}">
+    새 예약
+</a>
+
+<hr>
+
+<table border="1">
+
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>환자</th>
+        <th>의사</th>
+        <th>진료과</th>
+        <th>예약시간</th>
+        <th>관리</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:each="reservation : ${reservations}">
+
+        <td th:text="${reservation.id}"></td>
+
+        <td th:text="${reservation.patient.name}"></td>
+
+        <td th:text="${reservation.doctor.name}"></td>
+
+        <td th:text="${reservation.doctor.department}"></td>
+
+        <td th:text="${reservation.reservationDateTime}"></td>
+
+        <td>
+
+            <form
+                    th:action="@{/reservations/{id}/delete(id=${reservation.id})}"
+                    method="post">
+
+                <button type="submit">
+                    예약 취소
+                </button>
+
+            </form>
+
+        </td>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+</body>
+</html>

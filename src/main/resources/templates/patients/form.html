@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>환자 등록</title>
+</head>
+<body>
+
+<h1>환자 등록 / 수정</h1>
+
+<form th:object="${patient}"
+      th:action="${patient.id == null}
+        ? @{/patients}
+        : @{/patients/{id}(id=${patient.id})}"
+      method="post">
+
+    <div>
+        <label>이름</label>
+        <input type="text" th:field="*{name}" required>
+    </div>
+
+    <div>
+        <label>생년월일</label>
+        <input type="date" th:field="*{birthDate}">
+    </div>
+
+    <div>
+        <label>전화번호</label>
+        <input type="text" th:field="*{phone}">
+    </div>
+
+    <br>
+
+    <button type="submit">저장</button>
+
+</form>
+
+<br>
+
+<a th:href="@{/patients}">목록으로</a>
+
+</body>
+</html>

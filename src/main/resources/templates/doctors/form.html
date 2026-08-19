@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>의사 등록</title>
+</head>
+
+<body>
+
+<h1>의사 등록 / 수정</h1>
+
+<form th:object="${doctor}"
+      th:action="${doctor.id == null}
+        ? @{/doctors}
+        : @{/doctors/{id}(id=${doctor.id})}"
+      method="post">
+
+    <div>
+        <label>이름</label>
+        <input type="text"
+               th:field="*{name}"
+               required>
+    </div>
+
+    <div>
+        <label>진료과</label>
+
+        <select th:field="*{department}" required>
+            <option value="">진료과 선택</option>
+            <option value="내과">내과</option>
+            <option value="외과">외과</option>
+            <option value="정형외과">정형외과</option>
+            <option value="소아청소년과">소아청소년과</option>
+            <option value="피부과">피부과</option>
+        </select>
+    </div>
+
+    <br>
+
+    <button type="submit">저장</button>
+
+</form>
+
+<br>
+
+<a th:href="@{/doctors}">목록으로</a>
+
+</body>
+</html>

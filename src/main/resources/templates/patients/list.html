@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>환자 관리</title>
+</head>
+<body>
+
+<h1>환자 관리</h1>
+
+<a th:href="@{/patients/new}">환자 등록</a>
+
+<hr>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>이름</th>
+        <th>생년월일</th>
+        <th>전화번호</th>
+        <th>관리</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="patient : ${patients}">
+        <td th:text="${patient.id}"></td>
+        <td th:text="${patient.name}"></td>
+        <td th:text="${patient.birthDate}"></td>
+        <td th:text="${patient.phone}"></td>
+        <td>
+            <a th:href="@{/patients/{id}/edit(id=${patient.id})}">
+                수정
+            </a>
+
+            <form th:action="@{/patients/{id}/delete(id=${patient.id})}"
+                  method="post"
+                  style="display:inline;">
+                <button type="submit">삭제</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
