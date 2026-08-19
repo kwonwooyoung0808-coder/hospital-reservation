@@ -1,43 +1,22 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>환자 등록</title>
-</head>
+<head th:replace="~{fragments/layout :: head(${patient.id == null ? '환자 등록' : '환자 수정'})}"></head>
 <body>
-
-<h1>환자 등록 / 수정</h1>
-
-<form th:object="${patient}"
-      th:action="${patient.id == null}
-        ? @{/patients}
-        : @{/patients/{id}(id=${patient.id})}"
-      method="post">
-
-    <div>
-        <label>이름</label>
-        <input type="text" th:field="*{name}" required>
+<nav th:replace="~{fragments/layout :: navbar('patients')}"></nav>
+<main class="container page-content narrow">
+    <div class="page-header">
+        <div><span class="eyebrow">PATIENT</span><h1 th:text="${patient.id == null ? '환자 등록' : '환자 정보 수정'}"></h1></div>
+        <a class="btn btn-secondary" th:href="@{/patients}">목록으로</a>
     </div>
-
-    <div>
-        <label>생년월일</label>
-        <input type="date" th:field="*{birthDate}">
-    </div>
-
-    <div>
-        <label>전화번호</label>
-        <input type="text" th:field="*{phone}">
-    </div>
-
-    <br>
-
-    <button type="submit">저장</button>
-
-</form>
-
-<br>
-
-<a th:href="@{/patients}">목록으로</a>
-
+    <section class="panel">
+        <form th:object="${patient}" th:action="${patient.id == null} ? @{/patients} : @{/patients/{id}(id=${patient.id})}" method="post">
+            <div class="form-group"><label for="name">이름 <span class="required">*</span></label><input id="name" class="form-control" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" type="text" th:field="*{name}" placeholder="환자 이름"><p class="field-error" th:errors="*{name}"></p></div>
+            <div class="form-group"><label for="birthDate">생년월일</label><input id="birthDate" class="form-control" type="date" th:field="*{birthDate}"></div>
+            <div class="form-group"><label for="phone">전화번호 <span class="required">*</span></label><input id="phone" class="form-control" th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'" type="text" th:field="*{phone}" placeholder="010-0000-0000"><p class="field-error" th:errors="*{phone}"></p></div>
+            <div class="form-actions"><button class="btn btn-primary" type="submit">저장</button><a class="btn btn-secondary" th:href="@{/patients}">취소</a></div>
+        </form>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

@@ -1,16 +1,19 @@
 package com.example.hospital.controller;
 
-import com.example.hospital.entity.Doctor;
-import com.example.hospital.entity.Patient;
+import com.example.hospital.dto.ReservationForm;
+import com.example.hospital.entity.ReservationStatus;
+import com.example.hospital.exception.DuplicateReservationException;
 import com.example.hospital.service.DoctorService;
 import com.example.hospital.service.PatientService;
 import com.example.hospital.service.ReservationService;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/reservations")
@@ -31,73 +34,73 @@ public class ReservationController {
     }
 
     @GetMapping
-    public String list(Model model) {
-
-        model.addAttribute(
-                "reservations",
-                reservationService.findAll()
-        );
-
+    public String list(
+            @RequestParam(defaultValue = "") String patientName,
+            @RequestParam(defaultValue = "") String doctorName,
+            @RequestParam(required = false) ReservationStatus status,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate,
+            Model model
+    ) {
+        model.addAttribute("reservations", reservationService.search(
+                patientName, doctorName, status, reservationDate
+        ));
+        model.addAttribute("statuses", ReservationStatus.values());
+        model.addAttribute("patientName", patientName);
+        model.addAttribute("doctorName", doctorName);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("reservationDate", reservationDate);
         return "reservations/list";
     }
 
     @GetMapping("/new")
     public String createForm(Model model) {
-
-        model.addAttribute(
-                "patients",
-                patientService.findAll()
-        );
-
-        model.addAttribute(
-                "doctors",
-                doctorService.findAll()
-        );
-
+        model.addAttribute("reservation", new ReservationForm());
+        addFormOptions(model);
         return "reservations/form";
     }
 
     @PostMapping
     public String create(
-            @RequestParam Long patientId,
-            @RequestParam Long doctorId,
-            @RequestParam
-            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-            LocalDateTime reservationDateTime,
+            @Valid @ModelAttribute("reservation") ReservationForm form,
+            BindingResult bindingResult,
             Model model
     ) {
-
-        Patient patient =
-                patientService.findById(patientId);
-
-        Doctor doctor =
-                doctorService.findById(doctorId);
-
-        try {
-
-            reservationService.createReservation(
-                    patient,
-                    doctor,
-                    reservationDateTime
-            );
-
-        } catch (IllegalArgumentException e) {
-
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("patients", patientService.findAll());
-            model.addAttribute("doctors", doctorService.findAll());
-
+        if (bindingResult.hasErrors()) {
+            addFormOptions(model);
             return "reservations/form";
         }
-
+        try {
+            reservationService.createReservation(
+                    form.getPatientId(),
+                    form.getDoctorId(),
+                    form.getReservationDateTime()
+            );
+        } catch (DuplicateReservationException e) {
+            bindingResult.reject("duplicate", e.getMessage());
+            addFormOptions(model);
+            return "reservations/form";
+        }
         return "redirect:/reservations";
     }
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id) {
-
         reservationService.delete(id);
-
         return "redirect:/reservations";
+    }
+
+    @PostMapping("/{id}/status")
+    public String changeStatus(
+            @PathVariable Long id,
+            @RequestParam ReservationStatus status
+    ) {
+        reservationService.changeStatus(id, status);
+        return "redirect:/reservations";
+    }
+
+    private void addFormOptions(Model model) {
+        model.addAttribute("patients", patientService.findAll());
+        model.addAttribute("doctors", doctorService.findAll());
     }
 }

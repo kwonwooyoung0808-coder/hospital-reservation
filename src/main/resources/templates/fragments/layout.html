@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title + ' | 온케어 병원'}">온케어 병원</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar" th:fragment="navbar(active)"><div class="container nav-inner"><a class="brand" th:href="@{/}"><span class="brand-mark">+</span><span>온케어 병원</span></a><div class="nav-links"><a th:classappend="${active == 'home'} ? 'active'" th:href="@{/}">홈</a><a th:classappend="${active == 'patients'} ? 'active'" th:href="@{/patients}">환자 관리</a><a th:classappend="${active == 'doctors'} ? 'active'" th:href="@{/doctors}">의사 관리</a><a th:classappend="${active == 'reservations'} ? 'active'" th:href="@{/reservations}">예약 관리</a></div></div></nav>
+<footer class="footer" th:fragment="footer"><div class="container">온케어 병원 예약 관리 시스템</div></footer>
+</body>
+</html>

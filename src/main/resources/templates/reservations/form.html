@@ -1,76 +1,20 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org">
-
-<head>
-    <meta charset="UTF-8">
-    <title>진료 예약</title>
-</head>
-
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('진료 예약')}"></head>
 <body>
-
-<h1>진료 예약</h1>
-
-<p th:if="${errorMessage}"
-   th:text="${errorMessage}"
-   style="color:red;">
-</p>
-
-<form th:action="@{/reservations}" method="post">
-
-    <div>
-        <label>환자</label>
-
-        <select name="patientId" required>
-            <option value="">환자 선택</option>
-
-            <option
-                    th:each="patient : ${patients}"
-                    th:value="${patient.id}"
-                    th:text="${patient.name}">
-            </option>
-        </select>
-    </div>
-
-    <br>
-
-    <div>
-        <label>의사</label>
-
-        <select name="doctorId" required>
-            <option value="">의사 선택</option>
-
-            <option
-                    th:each="doctor : ${doctors}"
-                    th:value="${doctor.id}"
-                    th:text="${doctor.name + ' - ' + doctor.department}">
-            </option>
-        </select>
-    </div>
-
-    <br>
-
-    <div>
-        <label>예약 시간</label>
-
-        <input type="datetime-local"
-               name="reservationDateTime"
-               required>
-    </div>
-
-    <br>
-
-    <button type="submit">
-        예약하기
-    </button>
-
-</form>
-
-<br>
-
-<a th:href="@{/reservations}">
-    예약 목록
-</a>
-
+<nav th:replace="~{fragments/layout :: navbar('reservations')}"></nav>
+<main class="container page-content narrow">
+    <div class="page-header"><div><span class="eyebrow">RESERVATION</span><h1>진료 예약 등록</h1><p>환자와 담당 의사, 진료 시간을 선택해 주세요.</p></div><a class="btn btn-secondary" th:href="@{/reservations}">목록으로</a></div>
+    <section class="panel">
+        <form th:object="${reservation}" th:action="@{/reservations}" method="post">
+            <div class="alert alert-error" th:if="${#fields.hasGlobalErrors()}"><p th:each="error : ${#fields.globalErrors()}" th:text="${error}"></p></div>
+            <div class="form-group"><label for="patientId">환자 <span class="required">*</span></label><select id="patientId" class="form-control" th:classappend="${#fields.hasErrors('patientId')} ? 'is-invalid'" th:field="*{patientId}"><option value="">환자 선택</option><option th:each="patient : ${patients}" th:value="${patient.id}" th:text="${patient.name + ' · ' + patient.phone}"></option></select><p class="field-error" th:errors="*{patientId}"></p></div>
+            <div class="form-group"><label for="doctorId">의사 <span class="required">*</span></label><select id="doctorId" class="form-control" th:classappend="${#fields.hasErrors('doctorId')} ? 'is-invalid'" th:field="*{doctorId}"><option value="">의사 선택</option><option th:each="doctor : ${doctors}" th:value="${doctor.id}" th:text="${doctor.name + ' · ' + doctor.department}"></option></select><p class="field-error" th:errors="*{doctorId}"></p></div>
+            <div class="form-group"><label for="reservationDateTime">예약 시간 <span class="required">*</span></label><input id="reservationDateTime" class="form-control" th:classappend="${#fields.hasErrors('reservationDateTime')} ? 'is-invalid'" type="datetime-local" th:field="*{reservationDateTime}"><p class="field-error" th:errors="*{reservationDateTime}"></p></div>
+            <div class="form-actions"><button class="btn btn-primary" type="submit">예약 등록</button><a class="btn btn-secondary" th:href="@{/reservations}">취소</a></div>
+        </form>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('대시보드')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('home')}"></nav>
+<main class="container page-content">
+    <div class="dashboard-heading"><span class="eyebrow">DASHBOARD</span><h1>병원 예약 현황</h1><p>오늘의 진료 예약과 주요 운영 현황을 확인하세요.</p></div>
+    <section class="stat-grid">
+        <a class="stat-card blue" th:href="@{/patients}"><span class="stat-icon">환자</span><strong th:text="${patientCount}">0</strong><small>전체 환자 수</small></a>
+        <a class="stat-card green" th:href="@{/doctors}"><span class="stat-icon">의료진</span><strong th:text="${doctorCount}">0</strong><small>전체 의사 수</small></a>
+        <a class="stat-card violet" th:href="@{/reservations}"><span class="stat-icon">예약</span><strong th:text="${reservationCount}">0</strong><small>전체 예약 수</small></a>
+        <a class="stat-card orange" th:href="@{/reservations(reservationDate=${today})}"><span class="stat-icon">오늘</span><strong th:text="${todayReservationCount}">0</strong><small>오늘 예약 수</small></a>
+    </section>
+    <section class="panel table-panel dashboard-table">
+        <div class="section-header"><div><h2>최근 예약</h2><p>예약 일시 기준 최근 5건입니다.</p></div><a class="text-link" th:href="@{/reservations}">전체 보기 →</a></div>
+        <div class="table-responsive"><table><thead><tr><th>예약 일시</th><th>환자</th><th>담당 의사</th><th>진료과</th><th>상태</th></tr></thead><tbody>
+            <tr th:each="reservation : ${recentReservations}"><td class="strong" th:text="${#temporals.format(reservation.reservationDateTime, 'yyyy-MM-dd HH:mm')}"></td><td th:text="${reservation.patient.name}"></td><td th:text="${reservation.doctor.name}"></td><td th:text="${reservation.doctor.department}"></td><td><span class="status-badge" th:classappend="${'status-' + reservation.status}" th:text="${reservation.status.displayName}"></span></td></tr>
+            <tr th:if="${#lists.isEmpty(recentReservations)}"><td class="empty-state" colspan="5">등록된 데이터가 없습니다.</td></tr>
+        </tbody></table></div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
