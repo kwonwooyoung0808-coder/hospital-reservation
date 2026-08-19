@@ -1,7 +1,38 @@
-# 병원 진료 예약 관리 시스템
+<div align="center">
 
-Java와 Spring Boot를 사용해 구현한 병원 진료 예약 관리 웹 애플리케이션입니다.
-환자와 의사 정보를 관리하고, 진료 예약 등록·조회·상태 변경·삭제 기능을 제공합니다.
+# 🏥 온케어 병원 예약 관리 시스템
+
+**환자와 의료진, 진료 예약을 한곳에서 관리하는 Spring Boot 웹 애플리케이션**
+
+[![Java](https://img.shields.io/badge/Java-17-ED8B00?style=flat-square&logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?style=flat-square&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![MySQL](https://img.shields.io/badge/MySQL-8.x-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Thymeleaf](https://img.shields.io/badge/Thymeleaf-Server%20Side-005F0F?style=flat-square&logo=thymeleaf&logoColor=white)](https://www.thymeleaf.org/)
+[![Gradle](https://img.shields.io/badge/Gradle-9.5.1-02303A?style=flat-square&logo=gradle&logoColor=white)](https://gradle.org/)
+[![Tests](https://img.shields.io/badge/Tests-8%20passed-2EA44F?style=flat-square)](#테스트)
+
+환자와 의사 정보를 관리하고 진료 예약 등록·검색·상태 변경·삭제를 처리합니다.<br>
+서비스 검증과 DB 제약조건을 함께 사용해 동시 요청에서도 중복 예약을 방지합니다.
+
+[주요 기능](#주요-기능) · [기술 스택](#기술-스택) · [프로젝트 구조](#프로젝트-구조) · [실행 방법](#실행-방법) · [테스트](#테스트)
+
+</div>
+
+## 화면 미리보기
+
+### 대시보드
+
+전체 환자·의사·예약 수와 오늘 예약 수, 최근 예약 5건을 한눈에 확인할 수 있습니다.
+
+![온케어 병원 대시보드](docs/images/dashboard.png)
+
+### 예약 관리
+
+환자명, 의사명, 상태와 날짜로 예약을 검색하고 목록에서 바로 상태를 변경할 수 있습니다.
+
+![온케어 병원 예약 관리 화면](docs/images/reservations.png)
+
+> 화면은 실제 애플리케이션을 실행해 캡처한 결과이며 데스크톱과 모바일 화면에 대응합니다.
 
 ## 주요 기능
 
@@ -93,8 +124,31 @@ Browser → Controller → Service → Repository → MySQL
 
 ## 엔티티 관계
 
-```text
-Patient 1 ─── N Reservation N ─── 1 Doctor
+```mermaid
+erDiagram
+    PATIENT ||--o{ RESERVATION : makes
+    DOCTOR ||--o{ RESERVATION : receives
+
+    PATIENT {
+        Long id PK
+        String name
+        LocalDate birthDate
+        String phone
+    }
+
+    DOCTOR {
+        Long id PK
+        String name
+        String department
+    }
+
+    RESERVATION {
+        Long id PK
+        Long patient_id FK
+        Long doctor_id FK
+        LocalDateTime reservationDateTime UK
+        ReservationStatus status
+    }
 ```
 
 - 하나의 환자는 여러 예약을 가질 수 있습니다.
