@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('오류 안내')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('')}"></nav>
+<main class="container page-content narrow"><section class="panel error-panel"><div class="error-symbol">!</div><h1>요청을 처리하지 못했습니다</h1><p th:text="${errorMessage ?: '잠시 후 다시 시도해 주세요.'}"></p><div class="form-actions center"><a class="btn btn-primary" th:href="@{/}">홈으로</a><button class="btn btn-secondary" type="button" onclick="history.back()">이전 화면</button></div></section></main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

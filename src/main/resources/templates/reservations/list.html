@@ -1,68 +1,25 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org">
-
-<head>
-    <meta charset="UTF-8">
-    <title>예약 관리</title>
-</head>
-
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('예약 관리')}"></head>
 <body>
-
-<h1>예약 관리</h1>
-
-<a th:href="@{/reservations/new}">
-    새 예약
-</a>
-
-<hr>
-
-<table border="1">
-
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>환자</th>
-        <th>의사</th>
-        <th>진료과</th>
-        <th>예약시간</th>
-        <th>관리</th>
-    </tr>
-    </thead>
-
-    <tbody>
-
-    <tr th:each="reservation : ${reservations}">
-
-        <td th:text="${reservation.id}"></td>
-
-        <td th:text="${reservation.patient.name}"></td>
-
-        <td th:text="${reservation.doctor.name}"></td>
-
-        <td th:text="${reservation.doctor.department}"></td>
-
-        <td th:text="${reservation.reservationDateTime}"></td>
-
-        <td>
-
-            <form
-                    th:action="@{/reservations/{id}/delete(id=${reservation.id})}"
-                    method="post">
-
-                <button type="submit">
-                    예약 취소
-                </button>
-
-            </form>
-
-        </td>
-
-    </tr>
-
-    </tbody>
-
-</table>
-
+<nav th:replace="~{fragments/layout :: navbar('reservations')}"></nav>
+<main class="container page-content">
+    <div class="page-header"><div><span class="eyebrow">RESERVATIONS</span><h1>예약 관리</h1><p>진료 예약을 조회하고 상태를 관리합니다.</p></div><a class="btn btn-primary" th:href="@{/reservations/new}">+ 새 예약</a></div>
+    <form class="filter-bar filter-wide" method="get" th:action="@{/reservations}">
+        <div class="filter-field"><label for="patientName">환자명</label><input id="patientName" class="form-control" name="patientName" th:value="${patientName}" placeholder="환자명"></div>
+        <div class="filter-field"><label for="doctorName">의사명</label><input id="doctorName" class="form-control" name="doctorName" th:value="${doctorName}" placeholder="의사명"></div>
+        <div class="filter-field"><label for="status">상태</label><select id="status" class="form-control" name="status"><option value="">전체 상태</option><option th:each="item : ${statuses}" th:value="${item}" th:text="${item.displayName}" th:selected="${item == selectedStatus}"></option></select></div>
+        <div class="filter-field"><label for="reservationDate">예약일</label><input id="reservationDate" class="form-control" type="date" name="reservationDate" th:value="${reservationDate}"></div>
+        <button class="btn btn-primary" type="submit">검색</button><a class="btn btn-secondary" th:href="@{/reservations}">초기화</a>
+    </form>
+    <section class="panel table-panel"><div class="table-responsive"><table><thead><tr><th>예약 일시</th><th>환자</th><th>담당 의사</th><th>진료과</th><th>상태</th><th>관리</th></tr></thead><tbody>
+        <tr th:each="reservation : ${reservations}">
+            <td class="strong" th:text="${#temporals.format(reservation.reservationDateTime, 'yyyy-MM-dd HH:mm')}"></td><td th:text="${reservation.patient.name}"></td><td th:text="${reservation.doctor.name}"></td><td><span class="department-tag" th:text="${reservation.doctor.department}"></span></td><td><span class="status-badge" th:classappend="${'status-' + reservation.status}" th:text="${reservation.status.displayName}"></span></td>
+            <td class="actions status-actions"><form th:action="@{/reservations/{id}/status(id=${reservation.id})}" method="post"><select class="form-control compact" name="status" aria-label="예약 상태"><option th:each="item : ${statuses}" th:value="${item}" th:text="${item.displayName}" th:selected="${item == reservation.status}"></option></select><button class="btn btn-small btn-secondary" type="submit">변경</button></form><form th:action="@{/reservations/{id}/delete(id=${reservation.id})}" method="post" onsubmit="return confirm('이 예약을 삭제하시겠습니까?');"><button class="btn btn-small btn-danger" type="submit">삭제</button></form></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(reservations)}"><td class="empty-state" colspan="6">등록된 데이터가 없습니다.</td></tr>
+    </tbody></table></div></section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

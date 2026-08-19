@@ -1,47 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>의사 관리</title>
-</head>
+<head th:replace="~{fragments/layout :: head('의사 관리')}"></head>
 <body>
-
-<h1>의사 관리</h1>
-
-<a th:href="@{/doctors/new}">의사 등록</a>
-
-<hr>
-
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>이름</th>
-        <th>진료과</th>
-        <th>관리</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr th:each="doctor : ${doctors}">
-        <td th:text="${doctor.id}"></td>
-        <td th:text="${doctor.name}"></td>
-        <td th:text="${doctor.department}"></td>
-
-        <td>
-            <a th:href="@{/doctors/{id}/edit(id=${doctor.id})}">
-                수정
-            </a>
-
-            <form th:action="@{/doctors/{id}/delete(id=${doctor.id})}"
-                  method="post"
-                  style="display:inline;">
-                <button type="submit">삭제</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
+<nav th:replace="~{fragments/layout :: navbar('doctors')}"></nav>
+<main class="container page-content">
+    <div class="page-header"><div><span class="eyebrow">DOCTORS</span><h1>의사 관리</h1><p>의료진과 진료과 정보를 관리합니다.</p></div><a class="btn btn-primary" th:href="@{/doctors/new}">+ 의사 등록</a></div>
+    <form class="filter-bar" method="get" th:action="@{/doctors}"><div class="filter-field"><label for="name">이름</label><input id="name" class="form-control" name="name" th:value="${name}" placeholder="의사명 검색"></div><div class="filter-field"><label for="department">진료과</label><select id="department" class="form-control" name="department"><option value="">전체 진료과</option><option th:each="item : ${departments}" th:value="${item}" th:text="${item}" th:selected="${item == department}"></option></select></div><button class="btn btn-primary" type="submit">검색</button><a class="btn btn-secondary" th:href="@{/doctors}">초기화</a></form>
+    <section class="panel table-panel"><div class="table-responsive"><table><thead><tr><th>ID</th><th>이름</th><th>진료과</th><th>관리</th></tr></thead><tbody>
+        <tr th:each="doctor : ${doctors}"><td th:text="${doctor.id}"></td><td class="strong" th:text="${doctor.name}"></td><td><span class="department-tag" th:text="${doctor.department}"></span></td><td class="actions"><a class="btn btn-small btn-secondary" th:href="@{/doctors/{id}/edit(id=${doctor.id})}">수정</a><form th:action="@{/doctors/{id}/delete(id=${doctor.id})}" method="post" onsubmit="return confirm('이 의사를 삭제하시겠습니까?');"><button class="btn btn-small btn-danger" type="submit">삭제</button></form></td></tr>
+        <tr th:if="${#lists.isEmpty(doctors)}"><td class="empty-state" colspan="4">등록된 데이터가 없습니다.</td></tr>
+    </tbody></table></div></section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>
